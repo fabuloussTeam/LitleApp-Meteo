@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() => runApp(MyApp());
 
@@ -28,9 +29,15 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-
-  List<String> villes = ["Paris", "Bordeaux", "Marseilles"];
+  String key = "villes";
+  List<String> villes = [];
   String villeChoisit;
+
+  @override
+  void initState(){
+     super.initState();
+     obtenir();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -132,6 +139,19 @@ Future<Null> ajouterVille() async {
           );
        }
     );
+}
+
+//Creation d'une function pour mes share preferenece
+
+void obtenir() async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    List<String> liste = await sharedPreferences.getStringList(key);
+    if(liste != null){
+      setState(() {
+        villes = liste;
+      });
+    }
+
 }
   
   
