@@ -13,7 +13,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: MyHomePage(title: 'Coda meteo'),
-
+      debugShowCheckedModeBanner: false,
     );
   }
 }
@@ -55,9 +55,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           color: Colors.white,
                           elevation: 8.0,
                           child: texteAvecStyle("Ajouter une ville", color: Colors.blue),
-                          onPressed: (){
-
-                          },
+                          onPressed: ajouterVille
                         )
                       ],
                     ),
@@ -99,6 +97,8 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  
+  // Function Text personnalité
   Text texteAvecStyle(String data, {color: Colors.white, fontsize: 20.0, fontStyle: FontStyle.italic,}){
     return new Text(
         data,
@@ -110,4 +110,29 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
     );
   }
+  
+  // Function simple dialog
+
+Future<Null> ajouterVille() async {
+    return showDialog(
+       barrierDismissible: true,
+       context: context,
+       builder: (BuildContext buildcontext) {
+          return new SimpleDialog(
+            contentPadding: EdgeInsets.all(20.0),
+            title: texteAvecStyle("Ajouter une ville", fontsize: 22.0, color: Colors.blue),
+            children: <Widget>[
+              new TextField(
+                decoration: new InputDecoration(labelText: "ville"),
+                onSubmitted: (String str) {
+                  Navigator.pop(buildcontext);
+                },
+              ),
+            ],
+          );
+       }
+    );
+}
+  
+  
 }
