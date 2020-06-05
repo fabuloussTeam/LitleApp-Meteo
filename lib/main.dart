@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 void main() => runApp(MyApp());
@@ -42,17 +43,48 @@ class _MyHomePageState extends State<MyHomePage> {
       drawer: new Drawer(
         child: new Container(
           child: new ListView.builder(
-              itemCount: villes.length,
+              itemCount: villes.length + 2,
               itemBuilder: (context, i){
+                if(i == 0){
+                  return DrawerHeader(
+                    child: new Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: <Widget>[
+                        texteAvecStyle("Mes villes", fontsize: 22.0),
+                        new RaisedButton(
+                          color: Colors.white,
+                          elevation: 8.0,
+                          child: texteAvecStyle("Ajouter une ville", color: Colors.blue),
+                          onPressed: (){
+
+                          },
+                        )
+                      ],
+                    ),
+                  );
+                } else if(i == 1){
                   return new ListTile(
-                    title: new Text(villes[i]),
+                    title: texteAvecStyle("Ma ville actuelle", ),
                     onTap: (){
                       setState(() {
-                        villeChoisit = villes[i];
+                        villeChoisit = null;
                         Navigator.pop(context);
                       });
                     },
                   );
+                } else {
+                  String ville= villes[i - 2];
+                 return new ListTile(
+                     title: texteAvecStyle(ville),
+                     onTap: (){
+                       setState(() {
+                         villeChoisit = ville;
+                         Navigator.pop(context);
+                       });
+                     }
+                 );
+               }
+
               }
           ),
           color: Colors.blue,
@@ -63,8 +95,19 @@ class _MyHomePageState extends State<MyHomePage> {
               (villeChoisit == null) ? "Ville actuelle": villeChoisit,
             style: new TextStyle(color: Colors.black),
           ),
-
       ),
+    );
+  }
+
+  Text texteAvecStyle(String data, {color: Colors.white, fontsize: 20.0, fontStyle: FontStyle.italic,}){
+    return new Text(
+        data,
+        textAlign: TextAlign.center,
+        style: new TextStyle(
+          color: color,
+          fontSize: fontsize,
+          fontStyle: fontStyle,
+        ),
     );
   }
 }
