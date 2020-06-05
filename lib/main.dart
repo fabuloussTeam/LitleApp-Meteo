@@ -62,7 +62,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           color: Colors.white,
                           elevation: 8.0,
                           child: texteAvecStyle("Ajouter une ville", color: Colors.blue),
-                          onPressed: ajouterVille
+                          onPressed: dialogAjouterVille
                         )
                       ],
                     ),
@@ -120,7 +120,7 @@ class _MyHomePageState extends State<MyHomePage> {
   
   // Function simple dialog
 
-Future<Null> ajouterVille() async {
+Future<Null> dialogAjouterVille() async {
     return showDialog(
        barrierDismissible: true,
        context: context,
@@ -132,6 +132,7 @@ Future<Null> ajouterVille() async {
               new TextField(
                 decoration: new InputDecoration(labelText: "ville"),
                 onSubmitted: (String str) {
+                  ajouter(str);
                   Navigator.pop(buildcontext);
                 },
               ),
@@ -141,8 +142,7 @@ Future<Null> ajouterVille() async {
     );
 }
 
-//Creation d'une function pour mes share preferenece
-
+//Creation d'une function pour mes share preferenece associer a la liste villes
 void obtenir() async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     List<String> liste = await sharedPreferences.getStringList(key);
@@ -151,8 +151,16 @@ void obtenir() async {
         villes = liste;
       });
     }
-
 }
+
+// Function d'ajout d'une ville dans la liste villes et persistence avec sharepreference
+void ajouter(String str) async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    villes.add(str);
+    await sharedPreferences.setStringList(key, villes);
+    obtenir();
+}
+
   
   
 }
