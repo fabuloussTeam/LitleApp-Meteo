@@ -1,8 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:geocoder/geocoder.dart';
 
-void main() => runApp(MyApp());
+
+void main(){
+    runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
@@ -29,9 +35,22 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+
+  void _getCurrentLocation() async{
+    try {
+      Position position = await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+      print(position);
+    } on PlatformException catch (e) {
+
+    }
+  }
+
+
   String key = "villes";
   List<String> villes = [];
   String villeChoisit;
+
+
 
   @override
   void initState(){
@@ -63,7 +82,10 @@ class _MyHomePageState extends State<MyHomePage> {
                           elevation: 8.0,
                           child: texteAvecStyle("Ajouter une ville", color: Colors.blue),
                           onPressed: dialogAjouterVille
-                        )
+                        ),
+                        new RaisedButton(onPressed: (){
+                           _getCurrentLocation();
+                        })
                       ],
                     ),
                   );
@@ -78,7 +100,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     },
                   );
                 } else {
-                  String ville= villes[i - 2];
+                  String ville= villes[i-2];
                  return new ListTile(
                      title: texteAvecStyle(ville),
                      trailing: new IconButton(
