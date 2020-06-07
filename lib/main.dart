@@ -49,9 +49,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
 
 
-  _MyHomePageState(){
-   _currentPositionLocator();
- }
 
 
 
@@ -59,30 +56,42 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState(){
      super.initState();
      obtenir();
-    // _currentPositionLocator();
+    _currentPositionLocator();
+    _currentCoordonneesLocator();
   }
 
   void _currentPositionLocator() async {
     try {
       /* recuperation des coordonnées */
       Position position = await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-      // print("Sortie des coordonnées geographique: $position");
-
       /* convertion des coordonnées en address complete avec Geocoder */
       if (position != null) {
         final coordinates = new Coordinates(position.latitude, position.longitude);
         var adresse = await Geocoder.local.findAddressesFromCoordinates(coordinates);
         var first = adresse.first;
-      /*  print("sorti nom de la localité: ${first.locality}");
         //on a "mountain view" prck nous sommes sur un emulateur android. sur IOS c'est: cupertino
-
-        print("sorti ...: ${first.addressLine}");*/
         setState(() {
           ville_du_client = first.locality;
-         // print("localité du client est de : $localite_du_client");
         });
       }
     } on PlatformException catch (e) {}
+  }
+
+  // Convertion de la ville du client en coordonnées
+  void _currentCoordonneesLocator() async {
+    String str;
+    if(villeChoisit == null){
+      str = ville_du_client;
+    } else {
+      str = villeChoisit;
+      List<Address> coord = await Geocoder.local.findAddressesFromQuery(str);
+      print(coord);
+     if (coord != null) {
+        coord.forEach((Address) => print(Address.coordinates));
+      } else {
+        print("Coordonne introuvalble pour la ville: $str");
+      }
+    }
   }
 
   @override
@@ -118,7 +127,9 @@ class _MyHomePageState extends State<MyHomePage> {
                     title: texteAvecStyle(ville_du_client),
                     onTap: (){
                       setState(() {
-                        villeChoisit = null;
+                        villeChoisit =  null;
+                        _currentPositionLocator();
+                        _currentCoordonneesLocator();
                         Navigator.pop(context);
                       });
                     },
@@ -134,6 +145,7 @@ class _MyHomePageState extends State<MyHomePage> {
                      onTap: (){
                        setState(() {
                          villeChoisit = ville;
+                         _currentCoordonneesLocator();
                          Navigator.pop(context);
                        });
                      }
