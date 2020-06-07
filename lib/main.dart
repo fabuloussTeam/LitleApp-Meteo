@@ -4,14 +4,20 @@ import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoder/geocoder.dart';
+import 'package:geocoder/services/base.dart';
 
 
-void main(){
-    runApp(MyApp());
+void main() async{
+
+  runApp(MyApp());
+
+
+
 }
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -36,19 +42,16 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
 
-  void _getCurrentLocation() async{
-    try {
-      Position position = await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-      print(position);
-    } on PlatformException catch (e) {
-
-    }
-  }
-
-
   String key = "villes";
   List<String> villes = [];
   String villeChoisit;
+  String ville_du_client = "";
+
+
+
+  _MyHomePageState(){
+   _currentPositionLocator();
+ }
 
 
 
@@ -56,6 +59,30 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState(){
      super.initState();
      obtenir();
+    // _currentPositionLocator();
+  }
+
+  void _currentPositionLocator() async {
+    try {
+      /* recuperation des coordonnées */
+      Position position = await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+      // print("Sortie des coordonnées geographique: $position");
+
+      /* convertion des coordonnées en address complete avec Geocoder */
+      if (position != null) {
+        final coordinates = new Coordinates(position.latitude, position.longitude);
+        var adresse = await Geocoder.local.findAddressesFromCoordinates(coordinates);
+        var first = adresse.first;
+      /*  print("sorti nom de la localité: ${first.locality}");
+        //on a "mountain view" prck nous sommes sur un emulateur android. sur IOS c'est: cupertino
+
+        print("sorti ...: ${first.addressLine}");*/
+        setState(() {
+          ville_du_client = first.locality;
+         // print("localité du client est de : $localite_du_client");
+        });
+      }
+    } on PlatformException catch (e) {}
   }
 
   @override
@@ -83,15 +110,12 @@ class _MyHomePageState extends State<MyHomePage> {
                           child: texteAvecStyle("Ajouter une ville", color: Colors.blue),
                           onPressed: dialogAjouterVille
                         ),
-                        new RaisedButton(onPressed: (){
-                           _getCurrentLocation();
-                        })
                       ],
                     ),
                   );
                 } else if(i == 1){
                   return new ListTile(
-                    title: texteAvecStyle("Ma ville actuelle", ),
+                    title: texteAvecStyle(ville_du_client),
                     onTap: (){
                       setState(() {
                         villeChoisit = null;
@@ -115,7 +139,6 @@ class _MyHomePageState extends State<MyHomePage> {
                      }
                  );
                }
-
               }
           ),
           color: Colors.blue,
@@ -123,7 +146,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: new Center(
           child: new Text(
-              (villeChoisit == null) ? "Ville actuelle": villeChoisit,
+              (villeChoisit == null) ? ville_du_client : villeChoisit,
             style: new TextStyle(color: Colors.black),
           ),
       ),
