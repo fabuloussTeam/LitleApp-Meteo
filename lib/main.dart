@@ -63,7 +63,7 @@ class _MyHomePageState extends State<MyHomePage> {
         var first = adresse.first;
         //on a "mountain view" prck nous sommes sur un emulateur android. sur IOS c'est: cupertino
         setState(() {
-          ville_du_client = first.locality;
+           ville_du_client = first.locality;
          // print(ville_du_client);
           appelApi();
         });
@@ -92,7 +92,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
       final response = await http.get(urlApi);
       if(response.statusCode == 200){
-        print(response.body);
+         print(response.body);
       }
 
     }
