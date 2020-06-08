@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoder/geocoder.dart';
-import 'package:geocoder/services/base.dart';
+import 'package:http/http.dart' as http;
 
 void main() async{
   runApp(MyApp());
@@ -48,7 +48,7 @@ class _MyHomePageState extends State<MyHomePage> {
      super.initState();
      obtenir();
      _currentPositionLocator();
-    // _currentCoordonneesLocator();
+    // appelApi();
   }
 
   void _currentPositionLocator() async {
@@ -65,14 +65,14 @@ class _MyHomePageState extends State<MyHomePage> {
         setState(() {
           ville_du_client = first.locality;
          // print(ville_du_client);
-          _currentCoordonneesLocator();
+          appelApi();
         });
       }
     } on PlatformException catch (e) {}
   }
 
   // Convertion de la ville du client en coordonnées
-  void _currentCoordonneesLocator() async {
+  void appelApi() async {
     String str;
     if(villeChoisit == null){
       str = ville_du_client;
@@ -82,7 +82,19 @@ class _MyHomePageState extends State<MyHomePage> {
    List<Address> coord = await Geocoder.local.findAddressesFromQuery(str);
     print(coord);
     if (coord != null) {
-      coord.forEach((Address) => print(Address.coordinates));
+    //  coord.forEach((Address) => print(Address.coordinates));
+      final lat = coord.first.coordinates.latitude;
+      final lon = coord.first.coordinates.longitude;
+      String lang = Localizations.localeOf(context).languageCode;
+      final key = "709bce50b88ae968ef15626b9e4a2007";
+
+      String urlApi = "http://api.openweathermap.org/data/2.5/find?lat=$lat&lon=$lon&units=metric&appid=$key";
+
+      final response = await http.get(urlApi);
+      if(response.statusCode == 200){
+        print(response.body);
+      }
+
     }
   }
 
@@ -120,7 +132,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     onTap: (){
                       setState(() {
                         villeChoisit =  null;
-                        _currentCoordonneesLocator();
+                        appelApi();
                         Navigator.pop(context);
                       });
                     },
@@ -136,7 +148,7 @@ class _MyHomePageState extends State<MyHomePage> {
                      onTap: (){
                        setState(() {
                          villeChoisit = ville;
-                         _currentCoordonneesLocator();
+                         appelApi();
                          Navigator.pop(context);
                        });
                      }
