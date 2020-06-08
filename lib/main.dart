@@ -6,13 +6,8 @@ import 'package:geolocator/geolocator.dart';
 import 'package:geocoder/geocoder.dart';
 import 'package:geocoder/services/base.dart';
 
-
 void main() async{
-
   runApp(MyApp());
-
-
-
 }
 
 class MyApp extends StatelessWidget {
@@ -48,22 +43,19 @@ class _MyHomePageState extends State<MyHomePage> {
   String ville_du_client = "";
 
 
-
-
-
-
   @override
   void initState(){
      super.initState();
      obtenir();
-    _currentPositionLocator();
-    _currentCoordonneesLocator();
+     _currentPositionLocator();
+    // _currentCoordonneesLocator();
   }
 
   void _currentPositionLocator() async {
+    Position position = await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+
     try {
       /* recuperation des coordonnées */
-      Position position = await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
       /* convertion des coordonnées en address complete avec Geocoder */
       if (position != null) {
         final coordinates = new Coordinates(position.latitude, position.longitude);
@@ -72,6 +64,8 @@ class _MyHomePageState extends State<MyHomePage> {
         //on a "mountain view" prck nous sommes sur un emulateur android. sur IOS c'est: cupertino
         setState(() {
           ville_du_client = first.locality;
+         // print(ville_du_client);
+          _currentCoordonneesLocator();
         });
       }
     } on PlatformException catch (e) {}
@@ -84,13 +78,11 @@ class _MyHomePageState extends State<MyHomePage> {
       str = ville_du_client;
     } else {
       str = villeChoisit;
-      List<Address> coord = await Geocoder.local.findAddressesFromQuery(str);
-      print(coord);
-     if (coord != null) {
-        coord.forEach((Address) => print(Address.coordinates));
-      } else {
-        print("Coordonne introuvalble pour la ville: $str");
-      }
+    }
+   List<Address> coord = await Geocoder.local.findAddressesFromQuery(str);
+    print(coord);
+    if (coord != null) {
+      coord.forEach((Address) => print(Address.coordinates));
     }
   }
 
@@ -128,7 +120,6 @@ class _MyHomePageState extends State<MyHomePage> {
                     onTap: (){
                       setState(() {
                         villeChoisit =  null;
-                        _currentPositionLocator();
                         _currentCoordonneesLocator();
                         Navigator.pop(context);
                       });
