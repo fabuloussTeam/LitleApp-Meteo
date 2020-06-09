@@ -24,6 +24,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: MyHomePage(title: 'Coda meteo'),
+
       debugShowCheckedModeBanner: false,
     );
   }
@@ -181,13 +182,33 @@ class _MyHomePageState extends State<MyHomePage> {
           color: Colors.blue,
         ),
       ),
-      body: new Center(
+      body: (tempActuelle == null)
+      ? new Center(
           child: new Text(
               (villeChoisit == null) ? ville_du_client : villeChoisit,
             style: new TextStyle(color: Colors.black),
           ),
-      ),
+      ) : new Container(
+         width: MediaQuery.of(context).size.width,
+         height: MediaQuery.of(context).size.height,
+         decoration: new BoxDecoration(
+           image: new DecorationImage(
+               image: new AssetImage(assetName()),
+               fit: BoxFit.cover
+           )
+         ),
+      )
     );
+  }
+  
+  String assetName(){
+    if(tempActuelle.icon.contains("n")){
+      return "assets/nuit01.jpg";
+    } else if (tempActuelle.icon.contains("01") || tempActuelle.icon.contains("02") || tempActuelle.icon.contains("03")){
+      return "assets/jour01.jpg";
+    } else {
+      return "assets/jour03.jpg";
+    }
   }
 
   
