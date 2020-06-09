@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -5,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoder/geocoder.dart';
 import 'package:http/http.dart' as http;
+import 'temps.dart';
 
 void main() async{
   runApp(MyApp());
@@ -41,6 +44,8 @@ class _MyHomePageState extends State<MyHomePage> {
   List<String> villes = [];
   String villeChoisit;
   String ville_du_client = "";
+
+  Temps tempActuelle;
 
 
   @override
@@ -93,8 +98,25 @@ class _MyHomePageState extends State<MyHomePage> {
       final response = await http.get(urlApi);
       if(response.statusCode == 200){
          print(response.body);
-      }
+         Temps temps = new Temps();
+         Map map = jsonDecode(response.body);
+          temps.fromJSON(map);
+         //print(mapdecode);
+      /*   print(temps.message);
+         print(temps.name);
+         print(temps.temp);
+         print(temps.humidity);
+         print(temps.temp_min);
+         print(temps.temp_max);
+         print(temps.main);
+         print(temps.description);
+         print(temps.icon);*/
 
+          setState(() {
+           tempActuelle = temps;
+           print(tempActuelle.name);
+         });
+      }
     }
   }
 
