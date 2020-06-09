@@ -37,5 +37,9 @@ class Temps {
     this.main = mapWeather["main"];
     this.description = mapWeather["description"];
     this.icon = mapWeather["icon"];
+
+   /* String monIcone = mapWeather["icon"];
+   // print(monIcone);
+    this.icon = "assets/${monIcone.replaceAll("d", "").replaceAll("n", "")}.j";*/
   }
 }

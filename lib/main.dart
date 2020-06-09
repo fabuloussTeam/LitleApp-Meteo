@@ -8,6 +8,8 @@ import 'package:geolocator/geolocator.dart';
 import 'package:geocoder/geocoder.dart';
 import 'package:http/http.dart' as http;
 import 'temps.dart';
+import 'package:codameteo/my_flutter_app_icons.dart';
+
 
 void main() async{
   runApp(MyApp());
@@ -94,7 +96,7 @@ class _MyHomePageState extends State<MyHomePage> {
       String lang = Localizations.localeOf(context).languageCode;
       final key = "709bce50b88ae968ef15626b9e4a2007";
 
-      String urlApi = "http://api.openweathermap.org/data/2.5/find?lat=$lat&lon=$lon&units=metric&appid=$key";
+      String urlApi = "http://api.openweathermap.org/data/2.5/find?lat=$lat&lon=$lon&lang=$lang&units=metric&appid=$key";
 
       final response = await http.get(urlApi);
       if(response.statusCode == 200){
@@ -195,19 +197,84 @@ class _MyHomePageState extends State<MyHomePage> {
            image: new DecorationImage(
                image: new AssetImage(assetName()),
                fit: BoxFit.cover
-           )
+           ),
          ),
+        padding: EdgeInsets.all(20.0),
+        child: new Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: <Widget>[
+            texteAvecStyle(tempActuelle.name),
+            new Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                texteAvecStyle("${tempActuelle.temp.toInt()} °C", fontsize: 50.0),
+                new Image.asset(assetIcon(), width: 100,)
+              ],
+            ),
+            texteAvecStyle(tempActuelle.main),
+            texteAvecStyle(tempActuelle.description),
+            new Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                new Column(
+                  children: <Widget>[
+                    new Icon(MyFlutterApp.temperatire, color: Colors.white, size: 30.0),
+                    texteAvecStyle("${tempActuelle.pressure}", fontsize: 20.0)
+                  ],
+                ),
+                new Column(
+                  children: <Widget>[
+                    new Icon(MyFlutterApp.up_big, color: Colors.white, size: 30.0),
+                    texteAvecStyle("${tempActuelle.temp_max}", fontsize: 20.0)
+                  ],
+                ),
+                new Column(
+                  children: <Widget>[
+                    new Icon(MyFlutterApp.down_big, color: Colors.white, size: 30.0),
+                    texteAvecStyle("${tempActuelle.temp_min}", fontsize: 20.0)
+                  ],
+                ),
+                new Column(
+                  children: <Widget>[
+                    new Icon(MyFlutterApp.water, color: Colors.white, size: 30.0),
+                    texteAvecStyle("${tempActuelle.humidity}", fontsize: 20.0)
+                  ],
+                )
+              ],
+            )
+          ],
+        ),
       )
     );
   }
   
   String assetName(){
     if(tempActuelle.icon.contains("n")){
-      return "assets/nuit01.jpg";
-    } else if (tempActuelle.icon.contains("01") || tempActuelle.icon.contains("02") || tempActuelle.icon.contains("03")){
-      return "assets/jour01.jpg";
+      print(tempActuelle.icon);
+      return "assets/04.jpg";
     } else {
-      return "assets/jour03.jpg";
+      if (tempActuelle.icon.contains("01") || tempActuelle.icon.contains("02") || tempActuelle.icon.contains("03") ) {
+        print(tempActuelle.icon);
+        return "assets/02.jpg";
+      } else {
+        print(tempActuelle.icon);
+        return "assets/03.jpg";
+      }
+    }
+  }
+
+  String assetIcon() {
+    if(tempActuelle.icon.contains("n") || tempActuelle.icon.contains("01n") || tempActuelle.icon.contains("02n")){
+      print(tempActuelle.icon);
+      return "assets/windy.png";
+    } else {
+      if (tempActuelle.icon.contains("01") || tempActuelle.icon.contains("02") || tempActuelle.icon.contains("03") ) {
+        print(tempActuelle.icon);
+        return "assets/rain.png";
+      } else {
+        print(tempActuelle.icon);
+        return "assets/sun.png";
+      }
     }
   }
 
